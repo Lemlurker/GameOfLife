@@ -11,13 +11,22 @@ public class ForestFire3D : MonoBehaviour
     public int gridSizeY; // y size of the grid
     public int nlight; // the number of trees to set alight at the start of the game
     public int xC, yC; // used for picking random x, y points
-
+	public int WindSpeed; // wind speed (will range from 0, calm, to 3 strong)
+    public int WindVectorX; // wind vector for x axis, int between -1 & 1
+    public int WindVectorY; // wind vector for y axis, int between -1 & 1
+    public int RainChance;
+    public float RainDelay;
+    public int gameCount; 
+    public int RainForcast; // rain chance
+    public int RainState;//board rain state
+    public int pastRainState; //past state
     public int rockChance; // the percentage chance a cell is assigned as rock
     public int grassChance; // the percentage chance a cell is assigned as grass
 
     public GameObject cellPrefab; // gameobject prefab used to represent a cell on the grid   
 
     public ForestFireCell[,] forestFireCells = new ForestFireCell[0, 0]; // array of ForestFireCell objects
+	//public int[,] gameArray = new int[0, 0];
     public ForestFireCell.State[,] forestFireCellsNextGenStates = new ForestFireCell.State[0,0]; // array of cell states to be used in the next generation of the game 
 
     public GameObject[,] cellGameObjects = new GameObject[0, 0]; // an array to hold references to each gameobject that make up grid
@@ -43,6 +52,7 @@ public class ForestFire3D : MonoBehaviour
         RandomiseGrid();
         PauseGame(true);
         UpdateGridVisuals();
+
     }
 
     // this function controls whether or not to pause the game
@@ -79,7 +89,25 @@ public class ForestFire3D : MonoBehaviour
         // check if the R key has been pressed. this key will clear the grid and pause the game
         if (Input.GetKeyDown(KeyCode.R))
         {
-            RandomiseGrid();
+			WindSpeed = UnityEngine.Random.Range(1, 3); //generate random number  for wind speed
+            WindVectorX = UnityEngine.Random.Range(-1, 1); //generate random number for wind direction in x
+            WindVectorY = UnityEngine.Random.Range(-1, 1); // generate random number for wind direction in y
+            RainForcast = UnityEngine.Random.Range(0, 10); // generate random number for rain forcast
+            RainChance = UnityEngine.Random.Range(0, 10); //generate random number for chance of rain
+            RainDelay = UnityEngine.Random.Range( 75, 150); //generate random number for duration game will run before rain
+            gameCount = 0; //set counter to 0
+            RainState = 0; //set rain state to not raining
+            pastRainState = 0; //set rain state to 0
+            Debug.Log("windspeed is " + WindSpeed); //debug the wind speed to console
+            Debug.Log("wind Direction is (" + WindVectorX + "," + WindVectorY + ")"); // deubg the wind direction to console
+            Debug.Log("Rain Forcast is " + RainForcast * 10 +"%"); //debug the rain forcast to the console
+            if (RainChance < RainForcast) //debug weather itll rain and the delay if the random chance says yes
+            {
+                Debug.Log("it will rain");
+                Debug.Log(RainDelay);
+            }
+
+                RandomiseGrid();
         }
 
         // update the visual state of each cell
@@ -95,6 +123,16 @@ public class ForestFire3D : MonoBehaviour
         }
         else
         {
+            gameCount = gameCount + 1;
+            if (RainState != pastRainState) // checking if the rain state has changed
+            {
+                Debug.Log("it is raining"); //if it has then debug that it is raining once
+            }
+            if (RainChance<RainForcast & gameCount < RainDelay) //counting down to rain start only if it will rain AND it hasnt already started
+            {
+                Debug.Log(RainDelay - gameCount);
+            }
+            pastRainState = RainState; //set rain state past to the Rainstate current one cycle out of step
             UpdateCells();
             _gameTimer = 0f;
         }
@@ -178,7 +216,37 @@ public class ForestFire3D : MonoBehaviour
                     if (alightNeighbourCells > 0)
                     {
                         xC = UnityEngine.Random.Range(0, 100); // generate a random number between 0 and 100
+                        
+						if (xCount > 1 && yCount >1) // check if in bounds 1
+                        {
+                            if (xCount < gridSizeX - 1 && yCount < gridSizeY - 1) //check if in bounds 2
+                            {
 
+                                if (forestFireCells[xCount - WindVectorX, yCount - WindVectorY].cellState == ForestFireCell.State.Alight)
+                                {
+
+                                    xC = xC / (WindSpeed + 1);
+                                    
+                                }
+                                else
+                                {
+                                    xC = xC * (WindSpeed + 1);
+                                }
+                                
+                            }
+                            
+                        }
+
+                        if(RainChance < RainForcast) //if it is going to rain and
+                        {
+                            if (gameCount > RainDelay ) //if delay has completed then
+                            {
+                                xC = xC * 3; //make probability of catching fire much lower
+                                RainState = 1; //set rainState to raining
+                                
+                            }
+                            
+                        }
                         if (xC < 10 * alightNeighbourCells) // the more alight neighbours the greater the probability of catching light
                                                                       // e.g. 1 alight neighbour = 10 * 1 = 10% chance of catching fire, 2 alight neighbours = 10 * 2 = 20% chance of catching fire, etc.
                         {

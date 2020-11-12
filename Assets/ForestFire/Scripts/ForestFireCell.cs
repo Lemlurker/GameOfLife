@@ -33,7 +33,6 @@ public class ForestFireCell : MonoBehaviour
 
     public GameObject treeFireFVX; // reference to tree fire vfx
     public GameObject grassFireFVX; // reference to grass fire vfx
-
     public GameObject currentFire; // if the cell is on fire, the reference to the fire vfx is stored here
     public GameObject playerCamera; // reference to player camera
     public float fireVFXDistance; // float to set the maximum distance a fire vfx will be rendered at. this is used to improve rendering performance. 
@@ -71,7 +70,13 @@ public class ForestFireCell : MonoBehaviour
     {
         cellState = State.Tree;
         groundMeshRenderer.material = groundMaterialTree;
+        if (currentFire != null)
+        {
+            Destroy(currentFire);
+
+        }
         treeObject.SetActive(true);
+        
     }
 
     // change cell state to grass    
@@ -79,6 +84,11 @@ public class ForestFireCell : MonoBehaviour
     {
         cellState = State.Grass;
         groundMeshRenderer.material = groundMaterialGrass;
+        if (currentFire != null)
+        {
+            Destroy(currentFire);
+
+        }
         treeObject.SetActive(false);
         rockObject.SetActive(false);
     }
@@ -112,6 +122,7 @@ public class ForestFireCell : MonoBehaviour
             else // if the tree is not active, assign the grass vfx as the current fire object
             {
                 currentFire = Instantiate(grassFireFVX);
+                
                 currentFire.transform.SetParent(gameObject.transform, true);
             }
             // get a reference to the vfx component on the current fire object
@@ -126,6 +137,7 @@ public class ForestFireCell : MonoBehaviour
         if (currentFire != null)
         {
             Destroy(currentFire);
+            
         }
 
         // if there are leaves active in the hierarchy of this cell, disable them as if they have been burnt 

@@ -365,6 +365,9 @@ MonoBehaviour:
   nlight: 5
   xC: 0
   yC: 0
+  WindSpeed: 0
+  WindVectorX: 0
+  WindVectorY: 0
   cellSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   gameRunningText: {fileID: 297255195}
   gameRunning: 0

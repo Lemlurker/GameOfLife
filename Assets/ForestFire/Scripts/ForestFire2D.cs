@@ -10,6 +10,9 @@ public class ForestFire2D : MonoBehaviour
     public int gridSizeY; // y size of the grid
     public int nlight; // the number of trees to set alight at the start of the game
     public int xC, yC; // used for picking random x, y points
+    public int WindSpeed; // wind speed (will range from 0, calm, to 3 strong)
+    public int WindVectorX; // wind vector for x axis, int between -1 & 1
+    public int WindVectorY; // wind vector for y axis, int between -1 & 1
 
     public Sprite cellSprite; // sprite used to represent a cell on the grid
     public Text gameRunningText; // text used to display whether the game is running
@@ -40,6 +43,11 @@ public class ForestFire2D : MonoBehaviour
         CreateGrid(gridSizeX, gridSizeY);
         PauseGame(true);
         UpdateGridVisuals();
+        //WindSpeed = UnityEngine.Random.Range(1, 3);
+        //WindVectorX = UnityEngine.Random.Range(-1, 1);
+        //WindVectorY = UnityEngine.Random.Range(-1, 1);
+        //Debug.Log("windspeed is " + WindSpeed);
+        //Debug.Log("wind Direction is (" + WindVectorX + "," + WindVectorY + ")");
     }
 
     // this function controls whether or not to pause the game
@@ -82,6 +90,11 @@ public class ForestFire2D : MonoBehaviour
         // check if the R key has been pressed. this key will clear the grid and pause the game
         if (Input.GetKeyDown(KeyCode.R))
         {
+            WindSpeed = UnityEngine.Random.Range(1, 3);
+            WindVectorX = UnityEngine.Random.Range(-1, 1);
+            WindVectorY = UnityEngine.Random.Range(-1, 1);
+            Debug.Log("windspeed is " + WindSpeed);
+            Debug.Log("wind Direction is (" + WindVectorX + "," + WindVectorY + ")");
             nlight = 2; // how many trees to set on fire
             // iterate through every cell in the cell in the grid and set its state to dead, decide what type of object is present and if flammable assign an amount of fuel
             for (int xCount = 0; xCount < gridSizeX; xCount++)
@@ -173,11 +186,32 @@ public class ForestFire2D : MonoBehaviour
                     if (alightNeighbourCells >0)
                     {
                         xC = UnityEngine.Random.Range(0, 100); // generate a random number between 0 and 100
+                        if (xCount > 1 && yCount >1) // check if in bounds 1
+                        {
+                            if (xCount < gridSizeX - 1 && yCount < gridSizeY - 1) //check if in bounds 2
+                            {
+
+                                if (gameArray[xCount - WindVectorX, yCount - WindVectorY] == 1)
+                                {
+
+                                    xC = xC / (WindSpeed + 1);
+                                    
+                                }
+                                else
+                                {
+                                    xC = xC * (WindSpeed + 1);
+                                }
+                                
+                            }
+                            
+                        }
                         if (xC < 10 * alightNeighbourCells) // the more alight neighbours the greater the probability of catching light
                                                             // e.g. 1 alight neighbour = 10 * 1 = 10% chance of catching fire, 2 alight neighbours = 10 * 2 = 20% chance of catching fire, etc.
                         {
                             gameArrayNextGen[xCount, yCount] = 1;  // a 10% chance of catching fire
                         }
+
+
                     }
                     else // no neighbours on fire, keep it dead for the next generation of the game
                     {
