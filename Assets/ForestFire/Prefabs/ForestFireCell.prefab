@@ -150,15 +150,16 @@ MonoBehaviour:
   groundMaterialTree: {fileID: 2100000, guid: 5558b5711d37782468eeee5c2880e7d8, type: 2}
   treeObject: {fileID: 4045407423716281207}
   leaves: {fileID: 4045407423716281205}
-  grassObject: {fileID: 0}
   rockObject: {fileID: 8846265225297738733}
   treeFireFVX: {fileID: 4754294210375399161, guid: 88ca74c2fda62784d928ebacea7a6063,
     type: 3}
   grassFireFVX: {fileID: 7581294509281810365, guid: 728031911f0d2374c939b093c1ef2e75,
     type: 3}
+  smokeFVX: {fileID: 3209637479090064010, guid: 59fbc220c8a2c524aa86ee96a2b05701,
+    type: 3}
   currentFire: {fileID: 0}
   playerCamera: {fileID: 0}
-  fireVFXDistance: 50
+  fireVFXDistance: 500
 --- !u!114 &2395562120029711758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,7 +417,7 @@ PrefabInstance:
     - target: {fileID: 2471739892762720940, guid: a1edff9265393e6488e914edbb1a2042,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2471739892762720942, guid: a1edff9265393e6488e914edbb1a2042,
         type: 3}
